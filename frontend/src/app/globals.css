@@ -1,0 +1,321 @@
+@import "tailwindcss/preflight";
+@tailwind utilities;
+
+/* === FONDO SUPER GRADIENTE ANIMADO === */
+body {
+  min-height: 100vh;
+  margin: 0;
+  font-family: 'Poppins', 'Inter', 'Segoe UI', Arial, sans-serif;
+  color: #181c31;
+  letter-spacing: 0.01em;
+  background: linear-gradient(120deg, #4f8cff 0%, #6fd6ff 40%, #c97aff 100%);
+  background-size: 300% 300%;
+  animation: gradientMove 16s ease-in-out infinite;
+  transition: background 0.3s, color 0.3s;
+}
+
+@keyframes gradientMove {
+  0% { background-position: 0% 70%; }
+  50% { background-position: 100% 30%; }
+  100% { background-position: 0% 70%; }
+}
+
+/* === DARK MODE (¡CAMBIA BODY A .dark PARA PROBAR!) === */
+.dark body {
+  background: linear-gradient(120deg, #0b1224 0%, #292a3c 60%, #341b47 100%);
+  color: #f5f7fe;
+}
+
+:root {
+  --accent: #7b35ff;
+  --accent-light: #e8e3ff;
+  --border: #d6e0ff;
+  --card-bg: rgba(255,255,255,0.81);
+  --shadow: 0 8px 32px 0 rgba(74, 44, 130, 0.13);
+  --radius: 1.25rem;
+  --blur: 18px;
+}
+
+.dark {
+  --accent: #d974ff;
+  --accent-light: #3d234c;
+  --border: #472777;
+  --card-bg: rgba(29,20,49,0.84);
+  --shadow: 0 8px 32px 0 rgba(74, 44, 130, 0.32);
+}
+
+/* === TITULOS CON GLOW Y XXL === */
+h1, h2, h3 {
+  font-family: 'Poppins', 'Inter', Arial, sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.10em;
+  margin-bottom: 0.8rem;
+  color: var(--accent);
+  line-height: 1.1;
+  text-shadow: 0 0 32px #ffffff22, 0 4px 24px #ac7bfc77;
+  position: relative;
+  z-index: 2;
+  filter: brightness(1.1) contrast(1.12);
+}
+
+h1 { font-size: clamp(3rem, 7vw, 5.2rem); }
+h2 { font-size: clamp(2rem, 4vw, 3.2rem); }
+h3 { font-size: clamp(1.5rem, 3vw, 2.1rem); }
+
+.dark h1, .dark h2, .dark h3 {
+  color: var(--accent);
+  text-shadow: 0 0 30px #bb58ff55, 0 2px 18px #4d006699;
+}
+
+/* === GLOW ANIMADO PARA CLASES CUSTOM === */
+.glow-anim {
+  animation: superGlow 2.4s infinite alternate;
+}
+@keyframes superGlow {
+  0% { text-shadow: 0 0 12px #9fdcff, 0 0 20px #a65fff44; }
+  100% { text-shadow: 0 0 36px #9fdcff, 0 0 64px #d974ff; }
+}
+
+/* === PÁRRAFOS Y LISTAS ULTRA LEGIBLES === */
+p, li, blockquote {
+  font-size: 1.25rem;
+  color: #181c31;
+  margin-bottom: 0.9rem;
+  font-weight: 600;
+  line-height: 1.7;
+  filter: brightness(1.07);
+}
+
+.dark p, .dark li, .dark blockquote { color: #ece7fa; }
+
+ul {
+  padding-left: 2.2rem;
+  font-size: 1.18rem;
+}
+
+/* === CARDS GLASS 2.0 === */
+.card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 2px solid var(--border);
+  padding: 2.4rem;
+  margin: 1.4rem 0;
+  backdrop-filter: blur(var(--blur));
+  transition: box-shadow 0.22s, transform 0.16s;
+  will-change: box-shadow, transform;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+.card::before {
+  content: "";
+  position: absolute;
+  inset: -50%;
+  background: radial-gradient(circle, #bb58ff55 0%, transparent 70%);
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.7;
+  transition: opacity 0.4s;
+}
+.card:hover {
+  box-shadow: 0 24px 48px 0 #7b35ff3c, 0 2px 18px #4f8cff20;
+  transform: translateY(-6px) scale(1.03) rotate(-0.5deg);
+}
+.card > * { position: relative; z-index: 1; }
+
+/* === BOTONES CON GRADIENTE Y EFECTO NEÓN === */
+button,
+.btn,
+a.button-link {
+  background: linear-gradient(90deg, #7b35ff 10%, #4f8cff 60%, #63e6ff 100%);
+  border: none;
+  border-radius: 2em;
+  color: #fff;
+  padding: 1em 2.2em;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  box-shadow: 0 4px 20px #4f8cff77;
+  cursor: pointer;
+  margin: 0.7em 0;
+  font-size: 1.1rem;
+  transition: background 0.18s, box-shadow 0.18s, transform 0.15s;
+  outline: none;
+  text-shadow: 0 2px 8px #4f8cff77;
+  filter: brightness(1.15) contrast(1.1);
+}
+button:hover,
+.btn:hover,
+a.button-link:hover {
+  background: linear-gradient(270deg, #63e6ff 10%, #4f8cff 60%, #7b35ff 100%);
+  box-shadow: 0 8px 32px #4f8cff99, 0 0 24px #7b35ff44;
+  transform: scale(1.06) rotate(-1deg);
+  filter: brightness(1.25) contrast(1.13);
+}
+
+/* === INPUTS Y FORMS PREMIUM === */
+input, select, textarea {
+  font-family: 'Poppins', 'Inter', Arial, sans-serif;
+  border-radius: 1em;
+  border: 2px solid var(--border);
+  background: #f7f7fc;
+  color: #1a1832;
+  padding: 1em 1.2em;
+  font-size: 1.14em;
+  transition: border 0.22s, box-shadow 0.22s;
+  box-shadow: 0 2px 16px #7b35ff12;
+  margin-bottom: 1.2em;
+  font-weight: 700;
+}
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 4px 24px #7b35ff33;
+  background: #e8e3ff;
+  color: #141426;
+}
+.dark input, .dark select, .dark textarea {
+  background: #311e5c;
+  color: #f7f7fc;
+}
+
+/* === SECTION PADDING Y LIMPIEZA === */
+main {
+  padding: 3.5rem 1.3rem 3.5rem 1.3rem;
+  width: 100%;
+  max-width: 1320px;
+  margin: 0 auto;
+}
+
+section {
+  margin-bottom: 4.5rem;
+}
+
+footer {
+  background: #ebf4fe;
+  color: #7c8bb5;
+  border-top: 1px solid #c3bbfa;
+  font-size: 1.13rem;
+  padding: 2.6em 1.3em 1.8em 1.3em;
+  border-radius: 2em 2em 0 0;
+  margin-top: 5em;
+  box-shadow: 0 -4px 24px #c97aff11;
+  text-align: center;
+  letter-spacing: 0.06em;
+}
+.dark footer {
+  background: #1a1832;
+  color: #c3bbfa;
+  border-color: #341b47;
+}
+
+/* === SCROLLBAR Y SELECTION === */
+::-webkit-scrollbar { width: 12px; background: #ebd3fd; border-radius: 8px;}
+::-webkit-scrollbar-thumb { background: #a065e6; border-radius: 8px;}
+::-moz-selection { background: #7b35ff44; color: #fff;}
+::selection { background: #7b35ff44; color: #fff; }
+
+/* === DETAILS/FAQ STYLING === */
+details {
+  border-radius: 1em;
+  padding: 1em 1.4em;
+  margin-bottom: 1.1em;
+  background: var(--accent-light);
+  border: 1.5px solid var(--border);
+  box-shadow: 0 2px 18px #7b35ff13;
+  font-weight: 700;
+  color: #311e5c;
+  font-size: 1.11em;
+  transition: background 0.22s, border 0.18s;
+}
+details[open] {
+  background: #fff0fc;
+  border-color: #b57aff;
+}
+.dark details {
+  background: #2b1841;
+  color: #d5ccff;
+}
+.dark details[open] {
+  background: #311e5c;
+  border-color: #d974ff;
+}
+
+details summary {
+  cursor: pointer;
+  font-size: 1.14em;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 700px) {
+  h1 { font-size: 2.4rem;}
+  h2 { font-size: 1.45rem;}
+  h3 { font-size: 1.08rem;}
+  main { padding-left: 0.5rem; padding-right: 0.5rem;}
+  .card { padding: 1.2rem;}
+}
+
+/* === MINI ANIMACIÓN DE ENTRADA PARA SECCIONES (OPCIONAL, AGREGA .fadeIn A TUS DIVS) === */
+.fadeIn {
+  animation: fadeInMove 1.3s cubic-bezier(.4,0,.2,1) both;
+}
+@keyframes fadeInMove {
+  0% { opacity: 0; transform: translateY(40px) scale(0.96);}
+  100% { opacity: 1; transform: translateY(0) scale(1);}
+}
+
+/* === SECCIONES GLASS SEPARADAS COMO EN ACTUALIZARD.COM === */
+.section-card {
+  background: rgba(255,255,255,0.85);
+  border-radius: 2.2rem;
+  box-shadow: 0 6px 40px 0 #6c7dfa24, 0 1.5px 14px #7b35ff13;
+  border: 2.5px solid #e1e5f8;
+  padding: 3.2rem 2rem 3rem 2rem;
+  margin-bottom: 3.7rem;
+  position: relative;
+  z-index: 1;
+  backdrop-filter: blur(22px) saturate(1.35);
+  transition: box-shadow 0.23s, transform 0.16s, border 0.19s;
+  overflow: hidden;
+}
+.section-card::after {
+  content: "";
+  position: absolute;
+  inset: -36%;
+  background: radial-gradient(circle, #bb58ff33 0%, transparent 80%);
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.36;
+}
+.section-card > * { position: relative; z-index: 1; }
+
+@media (max-width: 700px) {
+  .section-card {
+    padding: 1.3rem 0.6rem 1.3rem 0.6rem;
+    border-radius: 1.15rem;
+    margin-bottom: 2.1rem;
+  }
+}
+
+/* === SEPARACIÓN VISUAL ENTRE SECCIONES, COMO ACTUALIZARD === */
+section.section-card:not(:last-child) {
+  margin-bottom: 4.5rem;
+  border-bottom: 1.8px solid #e7e0f8;
+  box-shadow: 0 4px 28px #7b35ff18;
+}
+
+/* === PARA DARK MODE === */
+.dark .section-card {
+  background: rgba(44, 28, 69, 0.95);
+  border: 2.5px solid #34213f;
+  box-shadow: 0 8px 44px 0 #bb58ff33, 0 1.5px 14px #7b35ff1e;
+}
+.dark .section-card::after {
+  background: radial-gradient(circle, #7b35ff33 0%, transparent 85%);
+  opacity: 0.42;
+}
+
+/* === OPCIONAL: BLOQUES DENTRO DE SECTION-CARD PUEDEN SEGUIR USANDO .card PARA UN GLASS SUAVE INTERNO === */
