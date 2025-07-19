@@ -1,6 +1,7 @@
 "use client";
 import { useRef, useState } from "react";
 import Image from "next/image";
+import { supabase } from "@/lib/supabaseClient";
 
 export default function CamaraFactura() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -9,7 +10,7 @@ export default function CamaraFactura() {
   const [msg, setMsg] = useState("");
   const [uploading, setUploading] = useState(false);
 
-  // Inicia la cámara
+  // Activa la cámara trasera del dispositivo
   const startCamera = async () => {
     setMsg("");
     try {
@@ -25,73 +26,86 @@ export default function CamaraFactura() {
     }
   };
 
-  // Toma la foto y la guarda como base64
+  // Captura la imagen del video
   const tomarFoto = () => {
-    if (videoRef.current && canvasRef.current) {
-      const ctx = canvasRef.current.getContext("2d");
-      if (!ctx) return;
-      ctx.drawImage(videoRef.current, 0, 0, 320, 240);
-      const image = canvasRef.current.toDataURL("image/jpeg");
-      setCaptured(image);
-      setMsg("¡Foto capturada!");
-      // Detiene la cámara después de tomar la foto
-      if (videoRef.current.srcObject) {
-        (videoRef.current.srcObject as MediaStream)
-          .getTracks()
-          .forEach((track) => track.stop());
-      }
+    if (!videoRef.current || !canvasRef.current) return;
+    const ctx = canvasRef.current.getContext("2d");
+    if (!ctx) return;
+    ctx.drawImage(videoRef.current, 0, 0, 320, 240);
+    setCaptured(canvasRef.current.toDataURL("image/jpeg"));
+    setMsg("¡Foto capturada!");
+    detenerCamara();
+  };
+
+  // Detiene la cámara
+  const detenerCamara = () => {
+    if (videoRef.current?.srcObject) {
+      (videoRef.current.srcObject as MediaStream)
+        .getTracks()
+        .forEach((track) => track.stop());
     }
   };
 
-  // Convierte base64 a blob para subir
-  function base64toBlob(dataurl: string) {
-    const arr = dataurl.split(",");
-    const mime = arr[0].match(/:(.*?);/)?.[1] || "";
-    const bstr = atob(arr[1]);
-    let n = bstr.length;
-    const u8arr = new Uint8Array(n);
-    while (n--) {
-      u8arr[n] = bstr.charCodeAt(n);
-    }
-    return new Blob([u8arr], { type: mime });
-  }
+  // Sube la imagen capturada a Supabase Storage
+  const uploadToSupabase = async (imageBase64: string): Promise<string> => {
+    const response = await fetch(imageBase64);
+    const blob = await response.blob();
+    const fileName = `factura-${Date.now()}.jpg`;
 
-  // Subir la foto al backend
+    const { data, error } = await supabase.storage
+      .from("facturas") // Nombre del bucket
+      .upload(fileName, blob, {
+        cacheControl: "3600",
+        upsert: false,
+        contentType: "image/jpeg",
+      });
+
+    if (error || !data) throw error ?? new Error("Error desconocido en Supabase");
+    return data.path;
+  };
+
+  // Maneja el upload (sin 'any')
   const handleUpload = async () => {
     if (!captured) {
       setMsg("No hay foto capturada.");
       return;
     }
     setUploading(true);
-    setMsg("Subiendo...");
-    const blob = base64toBlob(captured);
-    const file = new File([blob], "factura.jpg", { type: "image/jpeg" });
-
-    const formData = new FormData();
-    formData.append("factura", file);
-
-    const res = await fetch("http://localhost:4000/api/facturas/subir", {
-      method: "POST",
-      body: formData,
-    });
-    const data = await res.json();
-    setUploading(false);
-    if (res.ok) {
-      setMsg("¡Factura subida! " + data.filePath);
+    setMsg("Subiendo a Supabase...");
+    try {
+      const filePath = await uploadToSupabase(captured);
+      setMsg("¡Factura subida a Supabase! " + filePath);
       setCaptured(null);
-      if (canvasRef.current) {
-        const ctx = canvasRef.current.getContext("2d");
-        if (ctx) ctx.clearRect(0, 0, 320, 240);
+      limpiarCanvas();
+    } catch (err) {
+      if (err instanceof Error) {
+        setMsg("Error al subir: " + err.message);
+      } else {
+        setMsg("Error desconocido al subir la factura.");
       }
-    } else {
-      setMsg("Error: " + data.error);
+    } finally {
+      setUploading(false);
     }
+  };
+
+  // Limpia el canvas para tomar nueva foto
+  const limpiarCanvas = () => {
+    if (canvasRef.current) {
+      const ctx = canvasRef.current.getContext("2d");
+      if (ctx) ctx.clearRect(0, 0, 320, 240);
+    }
+  };
+
+  // Reinicia la captura
+  const reiniciarCaptura = () => {
+    setCaptured(null);
+    setMsg("");
   };
 
   return (
     <div className="max-w-md mx-auto p-6 rounded-xl glass-card shadow-xl text-center">
       <h2 className="text-2xl font-bold mb-4">Capturar Factura con Cámara</h2>
-      {!captured && (
+      {!captured ? (
         <>
           <video
             ref={videoRef}
@@ -116,8 +130,7 @@ export default function CamaraFactura() {
             style={{ display: "none" }}
           />
         </>
-      )}
-      {captured && (
+      ) : (
         <div>
           <Image
             src={captured}
@@ -126,7 +139,7 @@ export default function CamaraFactura() {
             style={{ border: "2px solid #7b35ff" }}
             width={240}
             height={180}
-            unoptimized // Permite base64 como src
+            unoptimized
             priority
           />
           <div className="flex gap-3 justify-center">
@@ -140,10 +153,7 @@ export default function CamaraFactura() {
             </button>
             <button
               className="btn"
-              onClick={() => {
-                setCaptured(null);
-                setMsg("");
-              }}
+              onClick={reiniciarCaptura}
               disabled={uploading}
               type="button"
             >
