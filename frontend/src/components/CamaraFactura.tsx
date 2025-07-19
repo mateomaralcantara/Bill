@@ -1,5 +1,6 @@
 "use client";
 import { useRef, useState } from "react";
+import Image from "next/image";
 
 export default function CamaraFactura() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -13,13 +14,13 @@ export default function CamaraFactura() {
     setMsg("");
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment" }
+        video: { facingMode: "environment" },
       });
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         videoRef.current.play();
       }
-    } catch (error) {
+    } catch {
       setMsg("No se pudo acceder a la cámara.");
     }
   };
@@ -101,26 +102,40 @@ export default function CamaraFactura() {
             style={{ border: "2px solid #7b35ff" }}
           />
           <div className="flex gap-3 justify-center mb-2">
-            <button className="btn" onClick={startCamera}>
+            <button className="btn" onClick={startCamera} type="button">
               Abrir Cámara
             </button>
-            <button className="btn" onClick={tomarFoto}>
+            <button className="btn" onClick={tomarFoto} type="button">
               Tomar Foto
             </button>
           </div>
-          <canvas ref={canvasRef} width={320} height={240} style={{ display: "none" }} />
+          <canvas
+            ref={canvasRef}
+            width={320}
+            height={240}
+            style={{ display: "none" }}
+          />
         </>
       )}
       {captured && (
         <div>
-          <img
+          <Image
             src={captured}
             alt="captura"
             className="rounded w-60 h-auto mx-auto mb-3"
             style={{ border: "2px solid #7b35ff" }}
+            width={240}
+            height={180}
+            unoptimized // Permite base64 como src
+            priority
           />
           <div className="flex gap-3 justify-center">
-            <button className="btn" onClick={handleUpload} disabled={uploading}>
+            <button
+              className="btn"
+              onClick={handleUpload}
+              disabled={uploading}
+              type="button"
+            >
               {uploading ? "Subiendo..." : "Subir Factura"}
             </button>
             <button
@@ -130,6 +145,7 @@ export default function CamaraFactura() {
                 setMsg("");
               }}
               disabled={uploading}
+              type="button"
             >
               Tomar otra
             </button>
