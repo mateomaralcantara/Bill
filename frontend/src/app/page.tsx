@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 
+
 // Tarjeta cuadrada, ultra visual, bien separada del resto
 const FeatureCard = memo(function FeatureCard({
   emoji,
