@@ -35,3 +35,5 @@ npx ts-node test-db-connection.ts
 
 186.6.77.139
 
+
+https://chatgpt.com/c/6875008e-9cac-800b-92e9-4b725d256fec
